@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+json_node_script/result.json
+json_node_script/test.csv
+json_node_script/node_modules
+json_node_script/demo.csv
