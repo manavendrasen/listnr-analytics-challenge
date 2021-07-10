@@ -1,5 +1,5 @@
-<h3 align="center">Frontend (Google) Analytics
-Challenge</h3>
+<h1 align="center">Frontend (Google) Analytics
+Challenge</h1>
 <p align="center">Repository for Frontend (Google) Analytics Challenge for Internship at Listnr Inc.</p>
 
 <!-- GETTING STARTED -->
