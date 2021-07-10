@@ -61,6 +61,7 @@ yarn install
 ## Contact
 
 Manavendra Sen
-[https://www.manavendrasen.co/](https://www.manavendrasen.co/)
-[+91 78790 71212](tel:+917879071212)
-[manavendra4288@gmail.com](mailto:manavendra4288@gmail.com)
+
+- Portfolio: [https://www.manavendrasen.co/](https://www.manavendrasen.co/)
+- Phone: [+91 78790 71212](tel:+917879071212)
+- Email: [manavendra4288@gmail.com](mailto:manavendra4288@gmail.com)
