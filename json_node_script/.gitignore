@@ -1,0 +1,4 @@
+node_modules
+
+# the csv file is being ignored by git, place the test.csv file at /json_node_script
+test.csv
