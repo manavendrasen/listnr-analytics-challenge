@@ -1,26 +1,30 @@
-import React, { useState, useEffect } from 'react'
-import moment from 'moment'
+import React, { useState, useEffect } from "react";
+import moment from "moment";
 
 // styles
-import './PageViewStats.css';
+import "./PageViewStats.css";
 
-import Results from '../../constants/result.json'
+import Results from "../../constants/result.json";
 
 // components
-import DateRangePicker from '../../components/DateRangePicker';
-import LineChart from '../../components/LineChart'
+import DateRangePicker from "../../components/DateRangePicker";
+import LineChart from "../../components/LineChart";
+
 // utility functions
-import getSessionsByStartEndDate from '../../utils/getSessionsByStartEndDate'
-import getAmountGroupedByDate from '../../utils/getAmountGroupedByDate';
+import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
+import getAmountGroupedByDate from "../../utils/getAmountGroupedByDate";
 
 // types
-import { Stats } from '../../constants/models/pageViewStats'
+import { Stats } from "../../constants/models/pageViewStats";
+
 const PageViewStats = () => {
+	const [loading, setLoading] = useState(true);
 	const [result, setResult] = useState<Stats[]>([]);
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
-		endDate: new Date("2017-10-15")
+		endDate: new Date("2017-10-15"),
 	});
+
 
 	useEffect(() => {
 		const dataByDateRange = getSessionsByStartEndDate(
@@ -28,6 +32,7 @@ const PageViewStats = () => {
 			date.startDate,
 			date.endDate
 		);
+
 		const categoryParsedDate = getAmountGroupedByDate(dataByDateRange);
 		const response: Stats[] = [];
 		Object.keys(categoryParsedDate).forEach((key) => {
@@ -38,43 +43,42 @@ const PageViewStats = () => {
 				hits: categoryParsedDate[key].hits,
 				pageviews: categoryParsedDate[key].pageviews,
 				newVisits: categoryParsedDate[key].newVisits,
-				bounces: categoryParsedDate[key].bounces
+				bounces: categoryParsedDate[key].bounces,
 			});
 		});
+
 		response.sort((a, b) => {
 			let da = new Date(a.date),
 				db = new Date(b.date);
 			return da.getTime() - db.getTime();
 		});
+
 		setResult(response);
+		setLoading(false)
 	}, [date]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
 			startDate,
-			endDate
+			endDate,
 		});
 	};
 
-	return (
+	return loading ? (
+		<p>Loading</p>
+	) : (
 		<div>
-			<div className="date-picker">
-				<DateRangePicker
-					startDate={date.startDate}
-					endDate={date.endDate}
-					onChange={onChange}
-				/>
-			</div>
+			<DateRangePicker
+				startDate={date.startDate}
+				endDate={date.endDate}
+				onChange={onChange}
+			/>
 
-			{/* <pre>
-				{JSON.stringify(result, null, 2)}
-			</pre> */}
-
-			<section className="container">
+			<section className='container'>
 				<LineChart data={result} />
 			</section>
 		</div>
-	)
-}
+	);
+};
 
-export default PageViewStats
+export default PageViewStats;
