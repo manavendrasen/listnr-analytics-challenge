@@ -1,0 +1,9 @@
+.container {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.date-picker {
+  padding: 2rem 1rem;
+}

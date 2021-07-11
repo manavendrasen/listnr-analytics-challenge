@@ -27,3 +27,4 @@ json_node_script/test.csv
 json_node_script/node_modules
 json_node_script/demo.csv
 json_node_script/dist
+src/constants/result.json
