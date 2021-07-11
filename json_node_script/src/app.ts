@@ -30,20 +30,14 @@ source.pipe(
       );
 
       // change page views from string to number
-
-      
-      
       data.totals.visits =
-        !data.totals.visits ? 0 : Number(data.totals.visits) ;
+        data.totals.visits !== null ? Number(data.totals.visits) : null;
       data.totals.hits =
-        !data.totals.hits ? 0 : Number(data.totals.hits) ;
+        data.totals.hits !== null ? Number(data.totals.hits) : null;
       data.totals.pageviews =
-        !data.totals.pageviews ? 0 : Number(data.totals.pageviews);
+        data.totals.pageviews !== null ? Number(data.totals.pageviews) : null;
       data.totals.newVisits =
-        !data.totals.newVisits ? 0 : Number(data.totals.newVisits);
-      data.totals.bounces =
-        !data.totals.bounces ? 0 : Number(data.totals.bounces);
-      
+        data.totals.newVisits !== null ? Number(data.totals.newVisits) : null;
 
       // push the formatted row into the array
       result.push(data);
