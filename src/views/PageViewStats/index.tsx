@@ -8,7 +8,7 @@ import Results from '../../constants/result.json'
 
 // components
 import DateRangePicker from '../../components/DateRangePicker';
-import AreaChart from '../../components/AreaChart'
+import LineChart from '../../components/LineChart'
 // utility functions
 import getSessionsByStartEndDate from '../../utils/getSessionsByStartEndDate'
 import getAmountGroupedByDate from '../../utils/getAmountGroupedByDate';
@@ -71,7 +71,7 @@ const PageViewStats = () => {
 			</pre> */}
 
 			<section className="container">
-				<AreaChart data={result} />
+				<LineChart data={result} />
 			</section>
 		</div>
 	)
