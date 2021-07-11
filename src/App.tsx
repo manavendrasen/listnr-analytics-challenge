@@ -1,26 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
-function App() {
+// constants
+import { PAGE_VIEW_STATS, CHANNEL_GROUPING_STATS } from './constants/routes'
+
+// views
+import { PageViewStats, ChannelGroupingStats } from './views'
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+      <Switch>
+        {/* handle auth */}
+        {/* redirecting to another page for stats */}
+        <Route exact path="/">
+          <Redirect push to={PAGE_VIEW_STATS} />
+        </Route>
+
+        {/* pie chart according to channel grouping */}
+        <Route exact path={CHANNEL_GROUPING_STATS} component={ChannelGroupingStats} />
+
+        {/* stack area chart according to view stats */}
+        <Route exact path={PAGE_VIEW_STATS} component={PageViewStats} />
+      </Switch>
+    </Router>
+  )
 }
 
 export default App;
