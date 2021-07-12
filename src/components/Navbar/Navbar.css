@@ -1,0 +1,22 @@
+.navbar {
+  padding-top: 0.5rem;
+  padding-right: 2rem;
+  padding-left: 2rem;
+}
+
+.navbar ul {
+  gap: 2rem;
+  justify-content: flex-end;
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+  .navbar ul {
+    gap: 0.5rem;
+  }
+}
