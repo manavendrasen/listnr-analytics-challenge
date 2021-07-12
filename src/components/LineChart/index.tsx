@@ -9,14 +9,18 @@ import {
 	Legend
 } from "recharts";
 
+// color constants
+import { COLORS } from '../../constants/colors/chartColors';
+
 // types
 import { Stats } from '../../constants/models/pageViewStats'
 
 interface Props {
-	data: Stats[]
+	data: Stats[],
+	keys: string[]
 }
 
-const LineChartFromData: React.FC<Props> = ({ data }) => {
+const LineChartFromData: React.FC<Props> = ({ data, keys }) => {
 	return (
 		<ResponsiveContainer width="100%" height={500}>
 			<LineChart
@@ -30,41 +34,16 @@ const LineChartFromData: React.FC<Props> = ({ data }) => {
 				<YAxis />
 				<Tooltip />
 				<Legend />
-				<Line
-					type="monotone"
-					dataKey="visits"
-					// stackId="1"
-					stroke="#805AD5"
-					fill="#805AD5"
-				/>
-				<Line
-					type="monotone"
-					dataKey="hits"
-					// stackId="1"
-					stroke="#48BB78"
-					fill="#48BB78"
-				/>
-				<Line
-					type="monotone"
-					dataKey="pageviews"
-					// stackId="1"
-					stroke="#ED64A6"
-					fill="#ED64A6"
-				/>
-				<Line
-					type="monotone"
-					dataKey="newVisits"
-					// stackId="1"
-					stroke="#F56565"
-					fill="#F56565"
-				/>
-				<Line
-					type="monotone"
-					dataKey="bounces"
-					// stackId="1"
-					stroke="#4299E1"
-					fill="#4299E1"
-				/>
+				{keys.map((key, index) => (
+					<Line
+						key={index}
+						type="monotone"
+						dataKey={key}
+						fill={COLORS[index % COLORS.length]}
+						stroke={COLORS[index % COLORS.length]}
+					/>
+				))}
+
 			</LineChart>
 		</ResponsiveContainer>
 	);
