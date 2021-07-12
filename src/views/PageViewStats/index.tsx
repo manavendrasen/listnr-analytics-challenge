@@ -12,19 +12,21 @@ import LineChart from "../../components/LineChart";
 
 // utility functions
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
-import getAmountGroupedByDate from "../../utils/getAmountGroupedByDate";
+import getAmountGrouped from "../../utils/getAmountGrouped";
 
 // types
 import { Stats } from "../../constants/models/pageViewStats";
 
 const PageViewStats = () => {
 	const [loading, setLoading] = useState(true);
-	const [result, setResult] = useState<Stats[]>([]);
+	const [chartData, setChartData] = useState<Stats[]>([]);
+	const [groupingCriteria, setGroupingCriteria] = useState<
+		"date" | "month" | "week" | string
+	>("date");
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
-
 
 	useEffect(() => {
 		const dataByDateRange = getSessionsByStartEndDate(
@@ -33,29 +35,41 @@ const PageViewStats = () => {
 			date.endDate
 		);
 
-		const categoryParsedDate = getAmountGroupedByDate(dataByDateRange);
-		const response: Stats[] = [];
-		Object.keys(categoryParsedDate).forEach((key) => {
-			response.push({
-				name: moment(key).format("ll"),
+		const amountGrouped = getAmountGrouped(
+			dataByDateRange,
+			groupingCriteria
+		);
+
+		const stats: Stats[] = [];
+		Object.keys(amountGrouped).forEach((key) => {
+			let formattedName: string;
+			switch (groupingCriteria) {
+				case "date":
+					formattedName = moment(key).format("ll");
+					break;
+				case "month":
+					formattedName = key;
+					break;
+			}
+
+			stats.push({
+				name: formattedName!,
 				date: key,
-				visits: categoryParsedDate[key].visits,
-				hits: categoryParsedDate[key].hits,
-				pageviews: categoryParsedDate[key].pageviews,
-				newVisits: categoryParsedDate[key].newVisits,
-				bounces: categoryParsedDate[key].bounces,
+				...amountGrouped[key],
 			});
 		});
 
-		response.sort((a, b) => {
-			let da = new Date(a.date),
-				db = new Date(b.date);
-			return da.getTime() - db.getTime();
+		stats.sort((a, b) => {
+			let da = moment(a.date);
+			let db = moment(b.date);
+			console.log(db, da, da.diff(db));
+
+			return da.diff(db);
 		});
 
-		setResult(response);
-		setLoading(false)
-	}, [date]);
+		setChartData(stats);
+		setLoading(false);
+	}, [date, groupingCriteria]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
@@ -74,8 +88,25 @@ const PageViewStats = () => {
 				onChange={onChange}
 			/>
 
+			<div className='dropdown'>
+				<label>Grouping Criteria: </label>
+
+				<select
+					value={groupingCriteria}
+					defaultValue='date'
+					onChange={(e) => {
+						setGroupingCriteria(e.target.value);
+					}}
+				>
+					<option selected value='date'>
+						Date
+					</option>
+					<option value='month'>Month</option>
+				</select>
+			</div>
+
 			<section className='container'>
-				<LineChart data={result} />
+				<LineChart data={chartData} />
 			</section>
 		</div>
 	);
