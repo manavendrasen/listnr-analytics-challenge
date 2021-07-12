@@ -1,5 +1,6 @@
 import { PieChart, Pie, Legend, Tooltip, Cell, ResponsiveContainer } from "recharts";
 
+import { COLORS } from '../../constants/colors/chartColors'
 interface Props {
 	data: {
 		name: string,
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const PieChartFromData: React.FC<Props> = ({ data }) => {
-	const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#E53E3E", "#ED8936", "#9F7AEA", "#ED64A6"];
+
 	return (
 		<ResponsiveContainer width="100%" height={500}>
 			<PieChart width={1000} height={500}>

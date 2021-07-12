@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 // components
@@ -15,7 +14,7 @@ const App = () => {
     <Router>
       <Navbar />
       <Switch>
-        {/* handle auth */}
+        {/* handle auth if required*/}
         {/* redirecting to another page for stats */}
         <Route exact path="/">
           <Redirect push to={PAGE_VIEW_STATS} />
@@ -24,7 +23,7 @@ const App = () => {
         {/* pie chart according to channel grouping */}
         <Route exact path={CHANNEL_GROUPING_STATS} component={ChannelGroupingStats} />
 
-        {/* stack area chart according to view stats */}
+        {/* line chart according to view stats */}
         <Route exact path={PAGE_VIEW_STATS} component={PageViewStats} />
       </Switch>
     </Router>

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import Results from "../../constants/result.json";
+import { useEffect, useState } from "react";
 
 // components
-import DateRangePicker from '../../components/DateRangePicker'
+import DateRangePicker from "../../components/DateRangePicker";
 import PieChart from "../../components/PieChart";
 
 // utility
 import getCategoryDataByFeature from "../../utils/getCategoryDataByFeature";
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
+import getData from "../../utils/getData";
 
-// interfaces
-import { SessionsEntry } from '../../constants/models/sessions'
+// types
+import { SessionsEntry } from "../../constants/models/sessions";
 
 // styles
 import "./ChannelGroupingStats.css";
@@ -21,20 +21,50 @@ interface ChartData {
 }
 
 const ChannelGroupingStats = () => {
-	const [result, setResult] = useState<SessionsEntry[]>(Results)
+	const [loading, setLoading] = useState(true);
+	const [fetchedData, setFetchedData] = useState<SessionsEntry[]>([]);
+	// chart data used to render chart
+	const [chartData, setChartData] = useState<ChartData[]>([]);
+
+	// default date in the fields
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
 
+	const fetchData = async () => {
+		const data = await getData();
+		setFetchedData(data);
+		setLoading(false);
+	};
+
+	// on component mount fetch the data
 	useEffect(() => {
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		// filter the data by range
 		const dataByDateRange = getSessionsByStartEndDate(
-			Results,
+			fetchedData,
 			date.startDate,
 			date.endDate
 		);
-		setResult(dataByDateRange)
-	}, [date]);
+
+		// find the values of different categories
+		const categoryData = getCategoryDataByFeature(dataByDateRange);
+
+		// data for pie chart
+		let category: ChartData[] = [];
+		Object.keys(categoryData).forEach((key) => {
+			category.push({
+				name: key,
+				value: categoryData[key],
+			});
+		});
+
+		setChartData(category);
+	}, [date, fetchedData]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
@@ -43,26 +73,19 @@ const ChannelGroupingStats = () => {
 		});
 	};
 
-	const chartDate = getCategoryDataByFeature(result);
-	let data: ChartData[] = [];
-	Object.keys(chartDate!).forEach((key) => {
-		data.push({
-			name: key,
-			value: chartDate![key],
-		});
-	});
-
-	return (
+	return loading ? (
+		<p>Loading...</p>
+	) : (
 		<div>
 			<DateRangePicker
 				startDate={date.startDate}
 				endDate={date.endDate}
 				onChange={onChange}
 			/>
-			<section className="container">
-				<PieChart data={data} />
+			<section className='container'>
+				<PieChart data={chartData} />
 			</section>
-		</div >
+		</div>
 	);
 };
 

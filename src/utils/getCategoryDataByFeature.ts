@@ -12,11 +12,6 @@ interface GroupedSession {
 function getCategoryDataByFeature(sessionList: Array<SessionsEntry>) {
 	
   const groupedSessions:GroupedSession = {};
-  // const length = Object.keys(sessionList).length;
-  // if (length === 0) {
-  //   console.error("List is empty");
-  //   return;
-  // }
 
   // for each session find the channelGrouping and group accordingly
   sessionList.forEach((session) => {

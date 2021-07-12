@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import moment from "moment";
-
-// styles
-import "./PageViewStats.css";
-
-import Results from "../../constants/result.json";
 
 // components
 import DateRangePicker from "../../components/DateRangePicker";
@@ -13,33 +8,51 @@ import LineChart from "../../components/LineChart";
 // utility functions
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
 import getAmountGrouped from "../../utils/getAmountGrouped";
+import getData from "../../utils/getData";
+import { sortState } from "../../utils/Stats/sortStats";
 
 // types
+import { SessionsEntry } from "../../constants/models/sessions";
 import { Stats } from "../../constants/models/pageViewStats";
+
+// styles
+import "./PageViewStats.css";
 
 const PageViewStats = () => {
 	const [loading, setLoading] = useState(true);
+	const [fetchedData, setFetchedData] = useState<SessionsEntry[]>([]);
 	const [chartData, setChartData] = useState<Stats[]>([]);
-	const [groupingCriteria, setGroupingCriteria] = useState<
-		"date" | "month" | "week" | string
-	>("date");
+	const [groupingCriteria, setGroupingCriteria] = useState<"date" | "month">(
+		"date"
+	);
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
 
+	// on component mount fetch json
+	const fetchData = async () => {
+		const data = await getData();
+		setFetchedData(data);
+		setLoading(false);
+	};
+
 	useEffect(() => {
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		// filter data according to selected dates
 		const dataByDateRange = getSessionsByStartEndDate(
-			Results,
+			fetchedData,
 			date.startDate,
 			date.endDate
 		);
 
-		const amountGrouped = getAmountGrouped(
-			dataByDateRange,
-			groupingCriteria
-		);
+		// group the data according to grouping criteria (date, month)
+		const amountGrouped = getAmountGrouped(dataByDateRange, groupingCriteria);
 
+		// construct data for chart
 		const stats: Stats[] = [];
 		Object.keys(amountGrouped).forEach((key) => {
 			let formattedName: string;
@@ -51,7 +64,6 @@ const PageViewStats = () => {
 					formattedName = key;
 					break;
 			}
-
 			stats.push({
 				name: formattedName!,
 				date: key,
@@ -59,17 +71,10 @@ const PageViewStats = () => {
 			});
 		});
 
-		stats.sort((a, b) => {
-			let da = moment(a.date);
-			let db = moment(b.date);
-			console.log(db, da, da.diff(db));
-
-			return da.diff(db);
-		});
-
-		setChartData(stats);
+		// sort stats to show in form of timeline
+		setChartData(sortState(stats));
 		setLoading(false);
-	}, [date, groupingCriteria]);
+	}, [date, groupingCriteria, fetchedData]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
@@ -77,6 +82,8 @@ const PageViewStats = () => {
 			endDate,
 		});
 	};
+
+	const chartKeys = ["visits", "hits", "pageviews", "newVisits", "bounces"];
 
 	return loading ? (
 		<p>Loading</p>
@@ -95,7 +102,7 @@ const PageViewStats = () => {
 					value={groupingCriteria}
 					defaultValue='date'
 					onChange={(e) => {
-						setGroupingCriteria(e.target.value);
+						setGroupingCriteria(e.target.value as "month" | "date");
 					}}
 				>
 					<option selected value='date'>
@@ -106,7 +113,7 @@ const PageViewStats = () => {
 			</div>
 
 			<section className='container'>
-				<LineChart data={chartData} />
+				<LineChart data={chartData} keys={chartKeys} />
 			</section>
 		</div>
 	);
