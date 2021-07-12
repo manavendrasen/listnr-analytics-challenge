@@ -6,7 +6,7 @@ import DateRangePicker from '../../components/DateRangePicker'
 import PieChart from "../../components/PieChart";
 
 // utility
-import getPercentOfChannelGrouping from "../../utils/getPercentOfChannelGrouping";
+import getCategoryDataByFeature from "../../utils/getCategoryDataByFeature";
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
 
 // interfaces
@@ -14,6 +14,11 @@ import { SessionsEntry } from '../../constants/models/sessions'
 
 // styles
 import "./ChannelGroupingStats.css";
+
+interface ChartData {
+	name: string;
+	value: number;
+}
 
 const ChannelGroupingStats = () => {
 	const [result, setResult] = useState<SessionsEntry[]>(Results)
@@ -38,7 +43,14 @@ const ChannelGroupingStats = () => {
 		});
 	};
 
-	const chartDate = getPercentOfChannelGrouping(result);
+	const chartDate = getCategoryDataByFeature(result);
+	let data: ChartData[] = [];
+	Object.keys(chartDate!).forEach((key) => {
+		data.push({
+			name: key,
+			value: chartDate![key],
+		});
+	});
 
 	return (
 		<div>
@@ -48,7 +60,7 @@ const ChannelGroupingStats = () => {
 				onChange={onChange}
 			/>
 			<section className="container">
-				<PieChart data={chartDate!} />
+				<PieChart data={data} />
 			</section>
 		</div >
 	);
