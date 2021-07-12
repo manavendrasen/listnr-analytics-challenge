@@ -4,8 +4,6 @@ import moment from "moment";
 // styles
 import "./PageViewStats.css";
 
-import Results from "../../constants/result.json";
-
 // components
 import DateRangePicker from "../../components/DateRangePicker";
 import LineChart from "../../components/LineChart";
@@ -13,12 +11,15 @@ import LineChart from "../../components/LineChart";
 // utility functions
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
 import getAmountGrouped from "../../utils/getAmountGrouped";
+import getData from '../../utils/getData';
 
 // types
+import { SessionsEntry } from "../../constants/models/sessions";
 import { Stats } from "../../constants/models/pageViewStats";
 
 const PageViewStats = () => {
 	const [loading, setLoading] = useState(true);
+	const [result, setResult] = useState<SessionsEntry[]>([]);
 	const [chartData, setChartData] = useState<Stats[]>([]);
 	const [groupingCriteria, setGroupingCriteria] = useState<
 		"date" | "month" | "week" | string
@@ -28,9 +29,20 @@ const PageViewStats = () => {
 		endDate: new Date("2017-10-15"),
 	});
 
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const data = await getData();
+			setResult(data);
+		};
+		setLoading(true);
+		fetchData();
+		setLoading(false);
+	}, []);
+
 	useEffect(() => {
 		const dataByDateRange = getSessionsByStartEndDate(
-			Results,
+			result,
 			date.startDate,
 			date.endDate
 		);
@@ -69,7 +81,7 @@ const PageViewStats = () => {
 
 		setChartData(stats);
 		setLoading(false);
-	}, [date, groupingCriteria]);
+	}, [date, groupingCriteria, result]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
