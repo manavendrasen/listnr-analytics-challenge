@@ -2,6 +2,16 @@
 Challenge</h1>
 <p align="center">Repository for Frontend (Google) Analytics Challenge for Internship at Listnr Inc.</p>
 
+## Preview
+
+**Line Chart** - one feature (visits, hits etc) of plotted by day and month
+
+![Line Chart](https://user-images.githubusercontent.com/26283488/125293866-72014f80-e341-11eb-80b8-536c000218a9.png)
+
+**Pie Chart** - displays for a channel grouping, the total amounts, and percentage for each category in the selected range.
+
+![Pie Chart](https://user-images.githubusercontent.com/26283488/125294255-bf7dbc80-e341-11eb-8c3b-0cee7cbdf02b.png)
+
 <!-- GETTING STARTED -->
 
 ## Getting Started
@@ -56,6 +66,54 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
+
+## File Structure
+
+```
+src
+├── App.tsx
+├── components
+│   ├── DateRangePicker
+│   │   ├── DateRangePicker.css
+│   │   └── index.tsx
+│   ├── LineChart
+│   │   └── index.tsx
+│   ├── Navbar
+│   │   ├── index.tsx
+│   │   └── Navbar.css
+│   └── PieChart
+│       └── index.tsx
+├── constants
+│   ├── api
+│   │   └── stats.ts
+│   ├── colors
+│   │   └── chartColors.ts
+│   ├── models
+│   │   ├── pageViewStats.ts
+│   │   └── sessions.ts
+│   └── routes.ts
+├── index.css
+├── index.tsx
+├── utils
+│   ├── getAmountGrouped.ts
+│   ├── getCategoryDataByFeature.ts
+│   ├── getData.ts
+│   ├── getGroupedSessionList.ts
+│   ├── getSessionsByDateRange.ts
+│   ├── getSessionsByStartEndDate.ts
+│   └── Stats
+│       └── sortStats.ts
+└── views
+    ├── ChannelGroupingStats
+    │   ├── ChannelGroupingStats.css
+    │   └── index.tsx
+    ├── index.tsx
+    └── PageViewStats
+        ├── index.tsx
+        └── PageViewStats.css
+
+
+```
 
 ## Contact
 
