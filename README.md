@@ -1,8 +1,11 @@
+<br />
 <h1 align="center">Frontend (Google) Analytics
 Challenge</h1>
 <p align="center">Repository for Frontend (Google) Analytics Challenge for Internship at Listnr Inc.</p>
 
 ## Preview
+
+Deployed on Vercel - [listnr-analytics-challenge.vercel.app](https://listnr-analytics-challenge.vercel.app/)
 
 **Line Chart** - one feature (visits, hits etc) of plotted by day and month
 
