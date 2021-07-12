@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // components
 import DateRangePicker from "../../components/DateRangePicker";
@@ -9,7 +9,7 @@ import getCategoryDataByFeature from "../../utils/getCategoryDataByFeature";
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
 import getData from "../../utils/getData";
 
-// interfaces
+// types
 import { SessionsEntry } from "../../constants/models/sessions";
 
 // styles
@@ -22,17 +22,21 @@ interface ChartData {
 
 const ChannelGroupingStats = () => {
 	const [loading, setLoading] = useState(true);
-	const [result, setResult] = useState<SessionsEntry[]>([]);
+	const [fetchedData, setFetchedData] = useState<SessionsEntry[]>([]);
+	// chart data used to render chart
 	const [chartData, setChartData] = useState<ChartData[]>([]);
+
+	// default date in the fields
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
 
+	// on component mount fetch the data
 	useEffect(() => {
 		const fetchData = async () => {
 			const data = await getData();
-			setResult(data);
+			setFetchedData(data);
 		};
 		setLoading(true);
 		fetchData();
@@ -40,23 +44,27 @@ const ChannelGroupingStats = () => {
 	}, []);
 
 	useEffect(() => {
+		// filter the data by range
 		const dataByDateRange = getSessionsByStartEndDate(
-			result,
+			fetchedData,
 			date.startDate,
 			date.endDate
 		);
 
-		const categorizedData = getCategoryDataByFeature(dataByDateRange);
+		// find the values of different categories
+		const category = getCategoryDataByFeature(dataByDateRange);
+
+		// data for pie chart
 		let data: ChartData[] = [];
-		Object.keys(categorizedData!).forEach((key) => {
+		Object.keys(category).forEach((key) => {
 			data.push({
 				name: key,
-				value: categorizedData![key],
+				value: category[key],
 			});
 		});
 
 		setChartData(data);
-	}, [date, result]);
+	}, [date, fetchedData]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({

@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import moment from "moment";
-
-// styles
-import "./PageViewStats.css";
 
 // components
 import DateRangePicker from "../../components/DateRangePicker";
@@ -17,23 +14,26 @@ import getData from '../../utils/getData';
 import { SessionsEntry } from "../../constants/models/sessions";
 import { Stats } from "../../constants/models/pageViewStats";
 
+// styles
+import "./PageViewStats.css";
+
 const PageViewStats = () => {
 	const [loading, setLoading] = useState(true);
-	const [result, setResult] = useState<SessionsEntry[]>([]);
+	const [fetchedData, setFetchedData] = useState<SessionsEntry[]>([]);
 	const [chartData, setChartData] = useState<Stats[]>([]);
 	const [groupingCriteria, setGroupingCriteria] = useState<
-		"date" | "month" | "week" | string
+		"date" | "month" | string
 	>("date");
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
 
-
+	// on component mount fetch json
 	useEffect(() => {
 		const fetchData = async () => {
 			const data = await getData();
-			setResult(data);
+			setFetchedData(data);
 		};
 		setLoading(true);
 		fetchData();
@@ -41,17 +41,20 @@ const PageViewStats = () => {
 	}, []);
 
 	useEffect(() => {
+		// filter data according to selected dates
 		const dataByDateRange = getSessionsByStartEndDate(
-			result,
+			fetchedData,
 			date.startDate,
 			date.endDate
 		);
 
+		// group the data according to grouping criteria (date, month)
 		const amountGrouped = getAmountGrouped(
 			dataByDateRange,
 			groupingCriteria
 		);
 
+		// construct data for chart
 		const stats: Stats[] = [];
 		Object.keys(amountGrouped).forEach((key) => {
 			let formattedName: string;
@@ -71,6 +74,7 @@ const PageViewStats = () => {
 			});
 		});
 
+		// sort stats to show in form of timeline
 		stats.sort((a, b) => {
 			let da = moment(a.date);
 			let db = moment(b.date);
@@ -81,7 +85,7 @@ const PageViewStats = () => {
 
 		setChartData(stats);
 		setLoading(false);
-	}, [date, groupingCriteria, result]);
+	}, [date, groupingCriteria, fetchedData]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
