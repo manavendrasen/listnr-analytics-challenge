@@ -17,34 +17,34 @@ interface AmountGrouped {
 
 function getAmountGrouped(
   sessionList: Array<SessionsEntry>,
-  criteria: "date" | "month" | string
+  criteria: "date" | "month" 
 ) {
   const groupedSessions: AmountGrouped = {};
   // groupingCriteria acts as the key to the objects
-  let groupingCriteria: string;
+  let groupingKey: string;
 
   sessionList.forEach((session) => {
     // for each session compute the key according to the criteria
     switch (criteria) {
       case "date": {
-        groupingCriteria = session.date;
+        groupingKey = session.date;
         break;
       }
       case "month": {
-        groupingCriteria = moment(session.date).format("MMM YYYY");
+        groupingKey = moment(session.date).format("MMM YYYY");
         break;
       }
     }
 
     // assign sessions according to the grouping criteria
-    if (groupingCriteria in groupedSessions) {
-      groupedSessions[groupingCriteria].visits += session.totals.visits;
-      groupedSessions[groupingCriteria].hits += session.totals.hits;
-      groupedSessions[groupingCriteria].pageviews += session.totals.pageviews;
-      groupedSessions[groupingCriteria].newVisits += session.totals.newVisits;
-      groupedSessions[groupingCriteria].bounces += session.totals.bounces;
+    if (groupingKey in groupedSessions) {
+      groupedSessions[groupingKey].visits += session.totals.visits;
+      groupedSessions[groupingKey].hits += session.totals.hits;
+      groupedSessions[groupingKey].pageviews += session.totals.pageviews;
+      groupedSessions[groupingKey].newVisits += session.totals.newVisits;
+      groupedSessions[groupingKey].bounces += session.totals.bounces;
     } else {
-      groupedSessions[groupingCriteria] = { ...session.totals };
+      groupedSessions[groupingKey] = { ...session.totals };
     }
   });
 
