@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Results from "../../constants/result.json";
 
 // components
-import DateRangePicker from '../../components/DateRangePicker'
+import DateRangePicker from "../../components/DateRangePicker";
 import PieChart from "../../components/PieChart";
 
 // utility
 import getCategoryDataByFeature from "../../utils/getCategoryDataByFeature";
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
+import getData from "../../utils/getData";
 
 // interfaces
-import { SessionsEntry } from '../../constants/models/sessions'
+import { SessionsEntry } from "../../constants/models/sessions";
 
 // styles
 import "./ChannelGroupingStats.css";
@@ -21,20 +21,42 @@ interface ChartData {
 }
 
 const ChannelGroupingStats = () => {
-	const [result, setResult] = useState<SessionsEntry[]>(Results)
+	const [loading, setLoading] = useState(true);
+	const [result, setResult] = useState<SessionsEntry[]>([]);
+	const [chartData, setChartData] = useState<ChartData[]>([]);
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
 
 	useEffect(() => {
+		const fetchData = async () => {
+			const data = await getData();
+			setResult(data);
+		};
+		setLoading(true);
+		fetchData();
+		setLoading(false);
+	}, []);
+
+	useEffect(() => {
 		const dataByDateRange = getSessionsByStartEndDate(
-			Results,
+			result,
 			date.startDate,
 			date.endDate
 		);
-		setResult(dataByDateRange)
-	}, [date]);
+
+		const categorizedData = getCategoryDataByFeature(dataByDateRange);
+		let data: ChartData[] = [];
+		Object.keys(categorizedData!).forEach((key) => {
+			data.push({
+				name: key,
+				value: categorizedData![key],
+			});
+		});
+
+		setChartData(data);
+	}, [date, result]);
 
 	const onChange = (startDate: Date, endDate: Date) => {
 		setDate({
@@ -43,26 +65,19 @@ const ChannelGroupingStats = () => {
 		});
 	};
 
-	const chartDate = getCategoryDataByFeature(result);
-	let data: ChartData[] = [];
-	Object.keys(chartDate!).forEach((key) => {
-		data.push({
-			name: key,
-			value: chartDate![key],
-		});
-	});
-
-	return (
+	return loading ? (
+		<p>Loading...</p>
+	) : (
 		<div>
 			<DateRangePicker
 				startDate={date.startDate}
 				endDate={date.endDate}
 				onChange={onChange}
 			/>
-			<section className="container">
-				<PieChart data={data} />
+			<section className='container'>
+				<PieChart data={chartData} />
 			</section>
-		</div >
+		</div>
 	);
 };
 
