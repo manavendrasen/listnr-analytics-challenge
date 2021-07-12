@@ -32,15 +32,15 @@ const ChannelGroupingStats = () => {
 		endDate: new Date("2017-10-15"),
 	});
 
+	const fetchData = async () => {
+		const data = await getData();
+		setFetchedData(data);
+		setLoading(false);
+	};
+
 	// on component mount fetch the data
 	useEffect(() => {
-		const fetchData = async () => {
-			const data = await getData();
-			setFetchedData(data);
-		};
-		setLoading(true);
 		fetchData();
-		setLoading(false);
 	}, []);
 
 	useEffect(() => {
@@ -52,18 +52,18 @@ const ChannelGroupingStats = () => {
 		);
 
 		// find the values of different categories
-		const category = getCategoryDataByFeature(dataByDateRange);
+		const categoryData = getCategoryDataByFeature(dataByDateRange);
 
 		// data for pie chart
-		let data: ChartData[] = [];
-		Object.keys(category).forEach((key) => {
-			data.push({
+		let category: ChartData[] = [];
+		Object.keys(categoryData).forEach((key) => {
+			category.push({
 				name: key,
-				value: category[key],
+				value: categoryData[key],
 			});
 		});
 
-		setChartData(data);
+		setChartData(category);
 	}, [date, fetchedData]);
 
 	const onChange = (startDate: Date, endDate: Date) => {

@@ -8,7 +8,8 @@ import LineChart from "../../components/LineChart";
 // utility functions
 import getSessionsByStartEndDate from "../../utils/getSessionsByStartEndDate";
 import getAmountGrouped from "../../utils/getAmountGrouped";
-import getData from '../../utils/getData';
+import getData from "../../utils/getData";
+import { sortState } from "../../utils/Stats/sortStats";
 
 // types
 import { SessionsEntry } from "../../constants/models/sessions";
@@ -21,23 +22,23 @@ const PageViewStats = () => {
 	const [loading, setLoading] = useState(true);
 	const [fetchedData, setFetchedData] = useState<SessionsEntry[]>([]);
 	const [chartData, setChartData] = useState<Stats[]>([]);
-	const [groupingCriteria, setGroupingCriteria] = useState<
-		"date" | "month" | string
-	>("date");
+	const [groupingCriteria, setGroupingCriteria] = useState<"date" | "month">(
+		"date"
+	);
 	const [date, setDate] = useState({
 		startDate: new Date("2017-09-01"),
 		endDate: new Date("2017-10-15"),
 	});
 
 	// on component mount fetch json
-	useEffect(() => {
-		const fetchData = async () => {
-			const data = await getData();
-			setFetchedData(data);
-		};
-		setLoading(true);
-		fetchData();
+	const fetchData = async () => {
+		const data = await getData();
+		setFetchedData(data);
 		setLoading(false);
+	};
+
+	useEffect(() => {
+		fetchData();
 	}, []);
 
 	useEffect(() => {
@@ -49,10 +50,7 @@ const PageViewStats = () => {
 		);
 
 		// group the data according to grouping criteria (date, month)
-		const amountGrouped = getAmountGrouped(
-			dataByDateRange,
-			groupingCriteria
-		);
+		const amountGrouped = getAmountGrouped(dataByDateRange, groupingCriteria);
 
 		// construct data for chart
 		const stats: Stats[] = [];
@@ -66,7 +64,6 @@ const PageViewStats = () => {
 					formattedName = key;
 					break;
 			}
-
 			stats.push({
 				name: formattedName!,
 				date: key,
@@ -75,15 +72,7 @@ const PageViewStats = () => {
 		});
 
 		// sort stats to show in form of timeline
-		stats.sort((a, b) => {
-			let da = moment(a.date);
-			let db = moment(b.date);
-			console.log(db, da, da.diff(db));
-
-			return da.diff(db);
-		});
-
-		setChartData(stats);
+		setChartData(sortState(stats));
 		setLoading(false);
 	}, [date, groupingCriteria, fetchedData]);
 
@@ -93,6 +82,8 @@ const PageViewStats = () => {
 			endDate,
 		});
 	};
+
+	const chartKeys = ["visits", "hits", "pageviews", "newVisits", "bounces"];
 
 	return loading ? (
 		<p>Loading</p>
@@ -111,7 +102,7 @@ const PageViewStats = () => {
 					value={groupingCriteria}
 					defaultValue='date'
 					onChange={(e) => {
-						setGroupingCriteria(e.target.value);
+						setGroupingCriteria(e.target.value as "month" | "date");
 					}}
 				>
 					<option selected value='date'>
@@ -122,7 +113,7 @@ const PageViewStats = () => {
 			</div>
 
 			<section className='container'>
-				<LineChart data={chartData} />
+				<LineChart data={chartData} keys={chartKeys} />
 			</section>
 		</div>
 	);
